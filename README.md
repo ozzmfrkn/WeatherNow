@@ -55,4 +55,4 @@ Ek Bilgi
 1. **Dosyayı Oluştur**:
    - Terminalde `WeatherNow` klasörüne git:
      ```bash
-     cd ~/Desktop/WeatherNow
+     cd ~/Desktop/WeatherNows
