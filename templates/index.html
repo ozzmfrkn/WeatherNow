@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherNow</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.3/dist/slate/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        body {
+            background: linear-gradient(to right, #2c3e50, #4b5e7a);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .weather-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .weather-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        .btn-pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .detail-item {
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+        .nav-link.active {
+            background-color: #3498db !important;
+            color: white !important;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">WeatherNow</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Ana Sayfa</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="card weather-card shadow-lg border-0 animate__animated animate__fadeIn">
+                    <div class="card-body p-4">
+                        <h1 class="card-title text-center fw-bold mb-4">WeatherNow</h1>
+                        <form method="POST" action="/hava-durumu" class="mb-4">
+                            <div class="mb-3">
+                                <input type="text" name="sehir" class="form-control form-control-lg" placeholder="Şehir adı girin (ör. Ankara)" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg w-100 btn-pulse animate__animated animate__pulse animate__-x">Hava Durumunu Göster</button>
+                        </form>
+                        {% if hata %}
+                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                        <script>
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Hata',
+                                text: '{{ hata }}',
+                            });
+                        </script>
+                        {% endif %}
+                        {% if veri or tahminler %}
+                        <ul class="nav nav-tabs mb-3" id="weatherTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="current-tab" data-bs-toggle="tab" data-bs-target="#current" type="button" role="tab" aria-controls="current" aria-selected="true">Güncel Durum</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="forecast-tab" data-bs-toggle="tab" data-bs-target="#forecast" type="button" role="tab" aria-controls="forecast" aria-selected="false">3 Günlük Tahmin</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="weatherTabsContent">
+                            {% if veri %}
+                            <div class="tab-pane fade show active" id="current" role="tabpanel" aria-labelledby="current-tab">
+                                <h2 class="fs-4 fw-semibold mb-3">{{ veri.sehir }} Hava Durumu</h2>
+                                <div class="card bg-dark text-light border-0 mb-3">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            <img src="http://openweathermap.org/img/wn/{{ veri.ikon }}@2x.png" alt="Hava durumu ikonu" class="me-3" style="width: 64px; height: 64px;">
+                                            <h3 class="fs-5 fw-bold text-capitalize">{{ veri.durum }}</h3>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-thermometer-half me-2 text-danger"></i>
+                                            <span class="fw-bold">Sıcaklık:</span> {{ veri.sicaklik }} °C
+                                            <p class="text-muted small">Mevcut hava sıcaklığı. {% if veri.sicaklik < 10 %}Soğuk bir gün, kalın giyinin!{% elif veri.sicaklik > 25 %}Sıcak bir gün, hafif giysiler tercih edin!{% else %}Ilıman bir hava.{% endif %}</p>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-thermometer-quarter me-2 text-warning"></i>
+                                            <span class="fw-bold">Hissedilen Sıcaklık:</span> {{ veri.hissedilen }} °C
+                                            <p class="text-muted small">Rüzgar ve nem etkisiyle hissedilen sıcaklık. {% if veri.hissedilen < veri.sicaklik %}Daha serin hissediliyor.{% else %}Sıcaklık daha yoğun.{% endif %}</p>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-tint me-2 text-primary"></i>
+                                            <span class="fw-bold">Nem:</span> {{ veri.nem }}%
+                                            <p class="text-muted small">Havadaki nem oranı. {% if veri.nem > 70 %}Yüksek nem, bunaltıcı olabilir.{% elif veri.nem < 30 %}Düşük nem, cilt kuruluğuna dikkat!{% else %}Normal nem seviyesi.{% endif %}</p>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-wind me-2 text-info"></i>
+                                            <span class="fw-bold">Rüzgar Hızı:</span> {{ veri.ruzgar }} m/s
+                                            <p class="text-muted small">Rüzgarın hızı. {% if veri.ruzgar > 10 %}Güçlü rüzgar, şapka ve eşyalara dikkat!{% elif veri.ruzgar < 3 %}Hafif esinti.{% else %}Orta kuvvette rüzgar.{% endif %}</p>
+                                        </div>
+                                        <div class="alert alert-info mt-3 animate__animated animate__fadeIn">
+                                            {% if veri.sicaklik < 10 %}
+                                            <i class="fas fa-snowflake me-2"></i> Soğuk bir gün, kalın giyinin ve sıcak içecekler tüketin!
+                                            {% elif veri.sicaklik > 25 %}
+                                            <i class="fas fa-sun me-2"></i> Sıcak bir gün, bol su için ve güneş kremi kullanın!
+                                            {% elif veri.nem > 70 %}
+                                            <i class="fas fa-tint me-2"></i> Yüksek nem, hafif kıyafetler giyin!
+                                            {% else %}
+                                            <i class="fas fa-cloud-sun me-2"></i> Ilıman bir hava, dışarıda vakit geçirmek için ideal!
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if tahminler %}
+                            <div class="tab-pane fade" id="forecast" role="tabpanel" aria-labelledby="forecast-tab">
+                                <h3 class="fs-5 fw-semibold mb-3">3 Günlük Tahmin</h3>
+                                <div class="row">
+                                    {% for tahmin in tahminler %}
+                                    <div class="col-12 col-md-4 mb-3">
+                                        <div class="card bg-dark text-light border-0 h-100 animate__animated animate__fadeIn">
+                                            <div class="card-body text-center">
+                                                <p class="mb-1 fw-bold">{{ tahmin.tarih | datetimeformat }}</p>
+                                                <img src="http://openweathermap.org/img/wn/{{ tahmin.ikon }}.png" alt="Tahmin ikonu" style="width: 40px; height: 40px;">
+                                                <p class="mb-1">{{ tahmin.sicaklik }} °C</p>
+                                                <p class="mb-1 text-capitalize">{{ tahmin.durum }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
