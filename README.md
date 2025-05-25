@@ -22,20 +22,20 @@ WeatherNow, OpenWeatherMap API'sini kullanarak gerçek zamanlı hava durumu veri
 5. Tarayıcıda aç:
     Adres: http://127.0.0.1:5000
 
-Kullanım
+##Kullanım
     Ana sayfada bir şehir adı girin (örneğin, "Ankara") ve "Hava Durumunu Göster" butonuna tıklayın.
     "Güncel Durum" sekmesinde anlık hava durumu detaylarını, "3 Günlük Tahmin" sekmesinde gelecek 3 günün tahminlerini görün.
     Geçersiz şehir girildiğinde uyarı mesajı (SweetAlert2) çıkar.
-Kullanılan Teknolojiler
+##Kullanılan Teknolojiler
     Python: Flask ile arka uç geliştirme.
     HTML/CSS: Bootstrap (Slate teması), Font Awesome ikonları, Animate.css animasyonları.
     JavaScript: Dinamik arka plan ve sekme geçiş animasyonları.
     API: OpenWeatherMap için hava durumu verileri.
 
-Ekip:
+##Ekip:
     Furkan
 
-Zorluklar ve Çözümler
+##Zorluklar ve Çözümler
     Zorluk 1: Flask kurulum hatası (ModuleNotFoundError).
         Çözüm: pip3 install flask requests ile bağımlılıklar kuruldu, yol ayarları yapıldı.
     Zorluk 2: Arayüzde çiftleme sorunu.
@@ -43,7 +43,7 @@ Zorluklar ve Çözümler
     Zorluk 3: API anahtarı hataları.
         Çözüm: Anahtar test edildi ve config.py güncellendi.
 
-Ek Bilgi
+##Ek Bilgi
     Proje, COMP1002 - Advanced Python dersi için geliştirilmiştir.
     Teslim tarihi: 25 Mayıs 2025, 23:59.
 
