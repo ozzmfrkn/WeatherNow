@@ -46,13 +46,3 @@ WeatherNow, OpenWeatherMap API'sini kullanarak gerçek zamanlı hava durumu veri
 ## Ek Bilgi
     Proje, COMP1002 - Advanced Python dersi için geliştirilmiştir.
     Teslim tarihi: 25 Mayıs 2025, 23:59.
-
-
----
-
-### **Nasıl Kullanılır?**
-
-1. **Dosyayı Oluştur**:
-   - Terminalde `WeatherNow` klasörüne git:
-     ```bash
-     cd ~/Desktop/WeatherNows
